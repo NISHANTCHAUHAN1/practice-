@@ -1,7 +1,32 @@
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import '../addUser/add.css';
+import { useEffect, useState } from 'react';
+import axios from "axios";
 
 const Edit = () => {
+
+  const users = {
+    firstName: "",
+    lastName: "",
+    email: "",
+  }
+
+  const {id} = useParams();
+  const [user, setUser] = useState(users);
+  
+  useEffect(() => {
+    axios.get(`http://localhost:8000/api/getOne/${id}`).then((response) => {
+      setUser(response.data);
+    }).catch(error => console.log(error));
+  },[id]);
+
+  const inputChangeHnadler = (e) => {
+    const {name, value} = e.target;
+    setUser({...user, [name]: value});
+    // console.log(user);
+  }
+
+
   return (
      <div className="addUser">
       <Link to={"/"}>Back</Link>
@@ -11,7 +36,9 @@ const Edit = () => {
         <div className="inputGroup">
           <label htmlFor="firstName">First name</label>
           <input
+           onChange={inputChangeHnadler}
             type="text"
+            value={user.firstName}
             id="firstName"
             name="firstName"
             autoComplete="off"
@@ -22,7 +49,9 @@ const Edit = () => {
         <div className="inputGroup">
           <label htmlFor="lastName">Last name</label>
           <input
+           onChange={inputChangeHnadler}
             type="text"
+            value={user.lastName}
             id="lastName"
             name="lastName"
             autoComplete="off"
@@ -33,7 +62,9 @@ const Edit = () => {
         <div className="inputGroup">
           <label htmlFor="email">Email</label>
           <input
+           onChange={inputChangeHnadler}
             type="email"
+            value={user.email}
             id="email"
             name="email"
             autoComplete="off"
