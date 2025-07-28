@@ -1,7 +1,8 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import '../addUser/add.css';
 import { useEffect, useState } from 'react';
 import axios from "axios";
+import toast from 'react-hot-toast';
 
 const Edit = () => {
 
@@ -13,6 +14,7 @@ const Edit = () => {
 
   const {id} = useParams();
   const [user, setUser] = useState(users);
+  const navigate = useNavigate()
   
   useEffect(() => {
     axios.get(`http://localhost:8000/api/getOne/${id}`).then((response) => {
@@ -26,13 +28,20 @@ const Edit = () => {
     // console.log(user);
   }
 
+  const submitForm = async (e) => {
+    e.preventDefault();
+    await axios.put( `http://localhost:8000/api/update/${id}`,user).then((response) => {
+      toast.success(response.data.msg)
+      navigate("/");
+    }).catch(error => console.log(error));
+  }
 
   return (
      <div className="addUser">
       <Link to={"/"}>Back</Link>
       <h3>Update User</h3>
 
-      <form className="addUserForm ">
+      <form className="addUserForm " onSubmit={submitForm}>
         <div className="inputGroup">
           <label htmlFor="firstName">First name</label>
           <input

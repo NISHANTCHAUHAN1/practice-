@@ -51,8 +51,8 @@ export const update = async(req, res) => {
             return res.status(404).json({msg: "User not found"});
         }
 
-        const updatedDate = await User.findByIdAndUpdate(id, req.body, {new: true});
-        res.status(200).json(updatedDate);
+        await User.findByIdAndUpdate(id, req.body, {new: true});
+        res.status(200).json({msg: "User Data Update SuccessFully"});
     } catch (error) {
         res.status(500).json({error: error});
     }
