@@ -1,4 +1,27 @@
 import User from "../Model/userModel.js"
+import bcrypt from "bcrypt";
+import generateToken from "../utils/generateToken.js";
+
+
+export const registerUser = async(req, res) => {
+    try {
+        const {firstName,lastName, email, password } = req.body; 
+
+        let user = await User.findOne({email});
+        if(user) return res.status(400).json({message: "Already have an account with this email"});
+
+        const hashPassword = await bcrypt.hash(password, 10);
+
+        user = await User.create({
+            firstName, lastName, email, password: hashPassword
+        })
+        generateToken(user._id, res);
+        res.status(200).json({msg: "User Register SuccessFully"});
+    } catch (error) {
+        res.status(500).json({ error: error.message, stack: error.stack });
+    }
+}
+
 
 export const create = async(req, res) => {
     try {
