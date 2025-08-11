@@ -5,7 +5,7 @@ import generateToken from "../utils/generateToken.js";
 
 export const registerUser = async(req, res) => {
     try {
-        const {firstName,lastName, email, password } = req.body; 
+        const {firstName, email, password } = req.body; 
 
         let user = await User.findOne({email});
         if(user) return res.status(400).json({message: "Already have an account with this email"});
@@ -13,7 +13,7 @@ export const registerUser = async(req, res) => {
         const hashPassword = await bcrypt.hash(password, 10);
 
         user = await User.create({
-            firstName, lastName, email, password: hashPassword
+            firstName,  email, password: hashPassword
         })
         generateToken(user._id, res);
         res.status(200).json({msg: "User Register SuccessFully"});
@@ -22,6 +22,18 @@ export const registerUser = async(req, res) => {
     }
 }
 
+export const login  = async(req, res) => {
+    const {email, password} = req.body;
+    const user = await User.findOne({email});
+
+    if(!user) return res.status(400).json({message: "No user with this email"});
+    const comparePassword = await bcrypt.compare(password, user.password);
+
+    if(!comparePassword) return res.status(400).json({message: "wrong password"});
+
+    generateToken(user._id, res)
+    res.status(200).json({message: "User login successFully"});
+}
 
 export const create = async(req, res) => {
     try {
